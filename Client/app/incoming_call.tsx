@@ -62,20 +62,25 @@ export default function IncomingCall() {
                         ))}
                     </View>
                 </View>
-
                 <View style={styles.actionButtons}>
-                    <TouchableOpacity
-                        style={[styles.button, styles.declineButton]}
-                        onPress={handleDecline}
-                    >
-                         <MaterialIcons name="call-end" size={32} color="#fff" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.button, styles.acceptButton]}
-                        onPress={handleAccept}
-                    >
-                        <Ionicons name="call-outline" size={32} color="#fff" />
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={[styles.button, styles.declineButton]}
+                            onPress={handleDecline}
+                        >
+                            <MaterialIcons name="call-end" size={32} color="#fff" />
+                        </TouchableOpacity>
+                        <Text style={styles.buttonLabel}>Decline</Text>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={[styles.button, styles.acceptButton]}
+                            onPress={handleAccept}
+                        >
+                            <Ionicons name="call-outline" size={32} color="#fff" />
+                        </TouchableOpacity>
+                        <Text style={styles.buttonLabel}>Accept</Text>
+                    </View>
                 </View>
             </View>
         </View>
@@ -174,6 +179,14 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    buttonContainer: {
+        alignItems: 'center',
+    },
+    buttonLabel: {
+        marginTop: 8,
+        fontSize: 16,
+        fontWeight: '500',
     },
 })
 
