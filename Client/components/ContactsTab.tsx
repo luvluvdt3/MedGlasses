@@ -17,6 +17,10 @@ interface Contact {
   imageUrl: string
 }
 
+interface ContactsTabProps {
+  onCreateContact: () => void
+}
+
 const contacts: Contact[] = [
   { id: '1', name: 'Amy Adams', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
   { id: '2', name: 'Jessica Avery', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
@@ -77,7 +81,7 @@ const ContactItem = ({ contact }: { contact: Contact }) => {
   )
 }
 
-export const ContactsTab = () => {
+export const ContactsTab = ({ onCreateContact }: ContactsTabProps) => {
   const [currentSection, setCurrentSection] = React.useState('A')
   const [isScrolling, setIsScrolling] = React.useState(false)
   const scrollTimeout = React.useRef<NodeJS.Timeout>()
@@ -107,7 +111,7 @@ export const ContactsTab = () => {
         <TextInput style={styles.searchInput} placeholder="Search" placeholderTextColor="#666" />
       </View>
 
-      <TouchableOpacity style={styles.createButton}>
+      <TouchableOpacity style={styles.createButton} onPress={onCreateContact}>
         <Ionicons name="person-add" size={24} color="#007AFF" />
         <Text style={styles.createButtonText}>Create new contact</Text>
       </TouchableOpacity>
