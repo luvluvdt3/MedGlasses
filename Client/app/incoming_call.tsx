@@ -11,7 +11,7 @@ export default function IncomingCall() {
     }
 
     const handleAccept = () => {
-        router.back()
+        router.push('/ongoing_call')
     }
 
     interface CallInfo {

@@ -12,14 +12,20 @@ export default function Layout() {
           }} 
         />
         <Stack.Screen 
-          name="call" 
+          name="incoming-call" 
           options={{
             presentation: 'modal',
             headerShown: false
+          }}
+        />
+        <Stack.Screen 
+          name="ongoing-call" 
+          options={{
+            presentation: 'modal',
+            headerShown: false,
           }}
         />
       </Stack>
     </GestureHandlerRootView>
   )
 }
-
