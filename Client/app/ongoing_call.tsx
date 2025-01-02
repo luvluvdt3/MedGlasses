@@ -7,7 +7,7 @@ export default function OngoingCall() {
   const router = useRouter()
 
   const handleEndCall = () => {
-    router.back()
+    router.push('/');
   }
 
   return (
