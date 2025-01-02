@@ -2,62 +2,47 @@ import React from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import { useCallStore } from '../store/callStore'
+import { useUserStore } from '../store/userStore'
 
 export default function IncomingCall() {
     const router = useRouter()
+    const { currentCallerId, patientInfo, startCall, endCall } = useCallStore()
+    const { getUserById } = useUserStore()
+
+    const caller = getUserById(currentCallerId)
 
     const handleDecline = () => {
+        endCall()
         router.back()
     }
 
     const handleAccept = () => {
+        startCall(currentCallerId, patientInfo)
         router.push('/ongoing_call')
     }
 
-    interface CallInfo {
-        callerName: string;
-        callerTitle: string;
-        callerImage: string;
-        dangerLevel: number;
-    }
-
-    interface PatientInfos {
-        infos: string[];
-    }
-
-    const callInfo: CallInfo = {
-        callerName: "Gregory Robin",
-        callerTitle: "Infirmier",
-        callerImage: "https://avatars.githubusercontent.com/u/77581509?v=4",
-        dangerLevel: 5,
-    }
-
-    const patientInfos: PatientInfos = {
-        infos: [
-            "Baptise Baudoin: 22 male, 85 kg",
-            "Cardiac Fibrillation",
-            "Internal Bleeding",
-            "Dizziness"
-        ]
+    if (!caller || !patientInfo) {
+        return null // or some loading state
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.profileCard}>
                 <Image
-                    source={{ uri: callInfo.callerImage }}
+                    source={{ uri: caller.imageUrl }}
                     style={styles.profileImage}
                 />
-                <Text style={styles.name}>{callInfo.callerName}</Text>
-                <Text style={styles.title}>{callInfo.callerTitle}</Text>
+                <Text style={styles.name}>{caller.name}</Text>
+                <Text style={styles.title}>{caller.role}</Text>
 
                 <View style={styles.numberContainer}>
-                    <Text style={styles.number}>{callInfo.dangerLevel}</Text>
+                    <Text style={styles.number}>5</Text>
                 </View>
 
                 <View style={styles.patientCard}>
                     <View style={styles.conditionsList}>
-                        {patientInfos.infos.map((info, index) => (
+                        {patientInfo.infos.map((info, index) => (
                             <Text key={index} style={styles.condition}>{info}</Text>
                         ))}
                     </View>

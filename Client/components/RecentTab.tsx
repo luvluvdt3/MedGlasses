@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
+import { useCallStore } from '../store/callStore'
+import { useUserStore } from '../store/userStore'
+import { useRouter } from 'expo-router'
 
 interface RecentContact {
   id: string
@@ -63,14 +66,15 @@ const recentContacts: RecentContact[] = [
     }
   }
 ]
+
 type TabType = 'recent' | 'priority' | 'missed'
 
-const SegmentedControl = ({ activeTab, onTabChange }: {
+const SegmentedControl = ({ activeTab, onTabChange }: { 
   activeTab: TabType
-  onTabChange: (tab: TabType) => void
+  onTabChange: (tab: TabType) => void 
 }) => (
   <View style={styles.segmentedControl}>
-    <TouchableOpacity
+    <TouchableOpacity 
       style={[styles.segment, activeTab === 'recent' && styles.segmentActive]}
       onPress={() => onTabChange('recent')}
     >
@@ -78,7 +82,7 @@ const SegmentedControl = ({ activeTab, onTabChange }: {
         Recent
       </Text>
     </TouchableOpacity>
-    <TouchableOpacity
+    <TouchableOpacity 
       style={[styles.segment, activeTab === 'priority' && styles.segmentActive]}
       onPress={() => onTabChange('priority')}
     >
@@ -86,7 +90,7 @@ const SegmentedControl = ({ activeTab, onTabChange }: {
         Highest Priority
       </Text>
     </TouchableOpacity>
-    <TouchableOpacity
+    <TouchableOpacity 
       style={[styles.segment, activeTab === 'missed' && styles.segmentActive]}
       onPress={() => onTabChange('missed')}
     >
@@ -97,7 +101,10 @@ const SegmentedControl = ({ activeTab, onTabChange }: {
   </View>
 )
 
-const ContactCard = ({ contact }: { contact: RecentContact }) => {
+const ContactCard = ({ contact }) => {
+  const router = useRouter()
+  const startCall = useCallStore(state => state.startCall)
+
   const getStatusColor = () => {
     switch (contact.status) {
       case 'closed':
@@ -123,6 +130,11 @@ const ContactCard = ({ contact }: { contact: RecentContact }) => {
     }
   }
 
+  const handleCall = () => {
+    startCall(contact.id, contact.patientInfo)
+    router.push('/ongoing_call')
+  }
+
   return (
     <View style={[styles.card, { backgroundColor: getStatusColor() }]}>
       <View style={styles.cardHeader}>
@@ -140,7 +152,7 @@ const ContactCard = ({ contact }: { contact: RecentContact }) => {
           <View style={styles.priorityBadge}>
             <Text style={styles.priorityText}>{contact.priority}</Text>
           </View>
-          <TouchableOpacity style={styles.callButton}>
+          <TouchableOpacity style={styles.callButton} onPress={handleCall}>
             <MaterialIcons name="phone" size={24} color="#fff" />
             <Text style={styles.callButtonText}>RAPPELER</Text>
           </TouchableOpacity>
@@ -159,8 +171,8 @@ const ContactCard = ({ contact }: { contact: RecentContact }) => {
       </View>
 
       <View style={styles.patientInfo}>
-        {contact.patientInfo.infos.map((condition, index) => (
-          <Text key={index} style={styles.condition}>{condition}</Text>
+        {contact.patientInfo.infos.map((info, index) => (
+          <Text key={index} style={styles.condition}>{info}</Text>
         ))}
       </View>
     </View>
@@ -168,7 +180,8 @@ const ContactCard = ({ contact }: { contact: RecentContact }) => {
 }
 
 export const RecentTab = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('recent')
+  const [activeTab, setActiveTab] = React.useState<TabType>('recent')
+  const recentContacts = useCallStore(state => state.recentContacts)
 
   const getFilteredContacts = () => {
     switch (activeTab) {
@@ -180,10 +193,10 @@ export const RecentTab = () => {
         return recentContacts
     }
   }
+
   return (
     <View style={styles.container}>
       <SegmentedControl activeTab={activeTab} onTabChange={setActiveTab} />
-
       <ScrollView style={styles.scrollView}>
         {getFilteredContacts().map(contact => (
           <ContactCard key={contact.id} contact={contact} />
@@ -302,11 +315,6 @@ const styles = StyleSheet.create({
   },
   patientInfo: {
     padding: 10,
-  },
-  patientDescription: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
   },
   condition: {
     fontSize: 16,

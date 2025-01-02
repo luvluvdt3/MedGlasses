@@ -1,28 +1,37 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-
+import { useCallStore } from '../store/callStore'
+import { useUserStore } from '../store/userStore'
 
 export default function OngoingCall() {
   const router = useRouter()
   const [showInfo, setShowInfo] = useState(false)
-  
-  const patientInfo = {
-    infos: [
-      "Baptise Baudoin: 22 male, 85 kg",
-      "Cardiac Fibrillation",
-      "Internal Bleeding",
-      "Dizziness"
-  ]
-  }
+  const { currentCallerId, patientInfo, callDuration, endCall, setCallDuration } = useCallStore()
+  const { getUserById } = useUserStore()
+
+  const caller = getUserById(currentCallerId)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCallDuration(callDuration + 1)
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [callDuration])
 
   const handleEndCall = () => {
+    endCall()
     router.back()
   }
 
   const toggleInfo = () => {
     setShowInfo(!showInfo)
+  }
+
+  if (!caller || !patientInfo) {
+    return null // or some loading state
   }
 
   return (
@@ -31,12 +40,12 @@ export default function OngoingCall() {
         <TouchableOpacity style={styles.infoIcon} onPress={toggleInfo}>
           <MaterialIcons name="info" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.callerName}>GREGORY</Text>
-        <Text style={styles.timer}>15:04</Text>
+        <Text style={styles.callerName}>{caller.name.toUpperCase()}</Text>
+        <Text style={styles.timer}>{new Date(callDuration * 1000).toISOString().substr(14, 5)}</Text>
       </View>
 
       <Image
-        source={{ uri: '/placeholder.svg?height=800&width=400' }}
+        source={{ uri: caller.imageUrl }}
         style={styles.videoFeed}
       />
 
