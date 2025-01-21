@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Image, StyleSheet, TouchableOpacity, Animated } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, PanResponder } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useCallStore } from '../store/callStore'
@@ -8,6 +8,8 @@ import { useUserStore } from '../store/userStore'
 export default function OngoingCall() {
   const router = useRouter()
   const [showInfo, setShowInfo] = useState(false)
+  const [isPointing, setIsPointing] = useState(false)
+  const [points, setPoints] = useState<{ x: number; y: number }[]>([])
   const { currentCallerId, patientInfo, callDuration, endCall, setCallDuration } = useCallStore()
   const { getUserById } = useUserStore()
 
@@ -31,8 +33,23 @@ export default function OngoingCall() {
     setShowInfo(!showInfo)
   }
 
+  const togglePointing = () => {
+    if (isPointing) {
+      setPoints([])
+    }
+    setIsPointing(!isPointing)
+  }
+
+  const handleImagePress = (event: { nativeEvent: { locationX: number; locationY: number } }) => {
+    if (!isPointing) return
+  
+    const { locationX, locationY } = event.nativeEvent
+    setPoints([{ x: locationX, y: locationY }])
+    console.log("Locations :",locationX,locationY);
+  }
+
   if (!caller || !patientInfo) {
-    return null // or some loading state
+    return null
   }
 
   return (
@@ -45,10 +62,25 @@ export default function OngoingCall() {
         <Text style={styles.timer}>{new Date(callDuration * 1000).toISOString().substr(14, 5)}</Text>
       </View>
 
-      <Image
-        source={{ uri: caller.imageUrl }}
-        style={styles.videoFeed}
-      />
+      <TouchableOpacity activeOpacity={1} onPress={handleImagePress} style={styles.videoFeedContainer}>
+        <Image
+          source={{ uri: caller.imageUrl }}
+          style={styles.videoFeed}
+        />
+        {points.map((point, index) => (
+          <MaterialIcons
+            key={index}
+            name="gps-fixed"
+            size={24}
+            color="#0FF"
+            style={{
+              position: 'absolute',
+              left: point.x - 12, // Centrer l'icône
+              top: point.y - 12,  // Centrer l'icône
+            }}
+          />
+        ))}
+      </TouchableOpacity>
 
       {showInfo && (
         <View style={styles.infoPanel}>
@@ -59,18 +91,16 @@ export default function OngoingCall() {
       )}
 
       <View style={styles.controls}>
-        <TouchableOpacity style={styles.controlButton}>
-          <MaterialIcons name="gps-fixed" size={24} color="#000" />
-          <Text style={styles.controlText}>Point</Text>
+        <TouchableOpacity
+          style={[styles.controlButton, isPointing && styles.activeControl]}
+          onPress={togglePointing}
+        >
+          <MaterialIcons name="gps-fixed" size={24} color={isPointing ? "#fff" : "#000"} />
+          <Text style={[styles.controlText, isPointing && styles.activeControlText]}>Point</Text>
         </TouchableOpacity>
         
-        {/* <TouchableOpacity style={[styles.controlButton, styles.activeControl]}>
-          <MaterialIcons name="videocam" size={24} color="#fff" />
-          <Text style={[styles.controlText, styles.activeControlText]}>Video</Text>
-        </TouchableOpacity> */}
-        
-        <TouchableOpacity style={[styles.controlButton, styles.activeControl]}>
-          <MaterialIcons name="mic" size={24} color="#fff" />
+        <TouchableOpacity style={[styles.controlButton, styles.activeControlMute]}>
+          <MaterialIcons name="mic" size={24} color="#ffff" />
           <Text style={[styles.controlText, styles.activeControlText]}>Mute</Text>
         </TouchableOpacity>
         
@@ -130,6 +160,11 @@ const styles = StyleSheet.create({
     color: 'black',
     marginLeft: 'auto',
   },
+  videoFeedContainer: {
+    width: '100%',
+    height: '74%',
+    marginTop: 80,
+  },
   videoFeed: {
     flex: 1,
     width: '100%',
@@ -144,11 +179,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-  },
-  patientName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
   },
   condition: {
     fontSize: 16,
@@ -174,7 +204,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   activeControl: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#0FF',
+  },
+  activeControlMute: {
+    backgroundColor: '#000',
   },
   endButton: {
     backgroundColor: '#FF3B30',
@@ -211,4 +244,3 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 })
-
