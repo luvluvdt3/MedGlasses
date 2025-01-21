@@ -132,7 +132,7 @@ const ContactCard = ({ contact }) => {
 
   const handleCall = () => {
     startCall(contact.id, contact.patientInfo)
-    router.push('/ongoing_call')
+    router.push('/incoming_call')
   }
 
   return (
