@@ -35,7 +35,10 @@ export default function OngoingCall() {
 
   const togglePointing = () => {
     if (isPointing) {
-      setPoints([])
+      if(points.length>0){
+        setPoints([])
+        console.log("ENLEVER POINT");
+      }
     }
     setIsPointing(!isPointing)
   }
