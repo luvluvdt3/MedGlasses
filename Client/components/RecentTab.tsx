@@ -23,7 +23,7 @@ const recentContacts: RecentContact[] = [
   {
     id: '1',
     name: 'Gregory Robin',
-    imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4',
+    imageUrl: 'https://media.licdn.com/dms/image/v2/C4D03AQHnJjXeNshAxw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1559240812811?e=2147483647&v=beta&t=uhZM3coNflb8x-xa9doxgNUXN1x7u-6eOdKWhtOieXg',
     time: '2 minutes ago',
     priority: 5,
     status: 'closed',
@@ -39,7 +39,7 @@ const recentContacts: RecentContact[] = [
   {
     id: '2',
     name: '+33 6 45 89 33 78',
-    imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4',
+    imageUrl: 'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg',
     time: '5 minutes ago',
     priority: 2,
     status: 'active',
@@ -54,7 +54,7 @@ const recentContacts: RecentContact[] = [
   {
     id: '3',
     name: '+33 6 45 89 33 78',
-    imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4',
+    imageUrl: 'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg',
     time: '25 minutes ago',
     priority: 5,
     status: 'closed-request',
@@ -185,8 +185,17 @@ export const RecentTab = () => {
 
   const getFilteredContacts = () => {
     switch (activeTab) {
-      case 'priority':
-        return [...recentContacts].sort((a, b) => b.priority - a.priority)
+      case 'priority': {
+        const missedCalls = [...recentContacts]
+            .filter(contact => contact.isMissed)
+            .sort((a, b) => b.priority - a.priority);
+    
+        const otherCalls = [...recentContacts]
+            .filter(contact => !contact.isMissed)
+            .sort((a, b) => b.priority - a.priority);
+    
+        return [...missedCalls, ...otherCalls];
+      }
       case 'missed':
         return recentContacts.filter(contact => contact.isMissed)
       default:

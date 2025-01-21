@@ -21,7 +21,7 @@ const defaultUsers: User[] = [
     id: '1',
     name: 'Gregory Robin',
     role: 'Infirmier',
-    imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4',
+    imageUrl: 'https://media.licdn.com/dms/image/v2/C4D03AQHnJjXeNshAxw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1559240812811?e=2147483647&v=beta&t=uhZM3coNflb8x-xa9doxgNUXN1x7u-6eOdKWhtOieXg',
     contacts: ['2', '3', '4']
   },
   {

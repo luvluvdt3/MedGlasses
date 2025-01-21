@@ -11,7 +11,7 @@ export default function OngoingCall() {
   const { currentCallerId, patientInfo, callDuration, endCall, setCallDuration } = useCallStore()
   const { getUserById } = useUserStore()
 
-  const caller = getUserById(currentCallerId)
+  const caller = getUserById('1')
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -23,6 +23,7 @@ export default function OngoingCall() {
 
   const handleEndCall = () => {
     endCall()
+    router.back()
     router.back()
   }
 
@@ -63,10 +64,10 @@ export default function OngoingCall() {
           <Text style={styles.controlText}>Point</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={[styles.controlButton, styles.activeControl]}>
+        {/* <TouchableOpacity style={[styles.controlButton, styles.activeControl]}>
           <MaterialIcons name="videocam" size={24} color="#fff" />
           <Text style={[styles.controlText, styles.activeControlText]}>Video</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         
         <TouchableOpacity style={[styles.controlButton, styles.activeControl]}>
           <MaterialIcons name="mic" size={24} color="#fff" />

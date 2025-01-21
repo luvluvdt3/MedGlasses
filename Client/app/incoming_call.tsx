@@ -28,7 +28,7 @@ export default function IncomingCall() {
     const callInfo: CallInfo = {
         callerName: "Gregory Robin",
         callerTitle: "Infirmier",
-        callerImage: "https://avatars.githubusercontent.com/u/77581509?v=4",
+        callerImage: "https://media.licdn.com/dms/image/v2/C4D03AQHnJjXeNshAxw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1559240812811?e=2147483647&v=beta&t=uhZM3coNflb8x-xa9doxgNUXN1x7u-6eOdKWhtOieXg",
         dangerLevel: 5,
     }
 

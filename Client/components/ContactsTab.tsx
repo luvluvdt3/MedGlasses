@@ -22,13 +22,13 @@ interface ContactsTabProps {
 }
 
 const contacts: Contact[] = [
-  { id: '1', name: 'Amy Adams', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
-  { id: '2', name: 'Jessica Avery', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
-  { id: '3', name: 'Christopher Bailey', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
-  { id: '4', name: 'Joseph Baker', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
-  { id: '5', name: 'James Bennett', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
-  { id: '6', name: 'Megan Berry', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
-  { id: '7', name: 'Hannah Blair', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
+  { id: '1', name: 'Amy Adams', imageUrl: 'https://images.mubicdn.net/images/cast_member/94219/cache-421024-1553068702/image-w856.jpg' },
+  { id: '2', name: 'Christopher Bailey', imageUrl: 'https://i1.sndcdn.com/avatars-cPQmqs52F1v2V4hV-9qlJHA-t500x500.jpg' },
+  { id: '3', name: 'Gregory Robin', imageUrl: 'https://media.licdn.com/dms/image/v2/C4D03AQHnJjXeNshAxw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1559240812811?e=2147483647&v=beta&t=uhZM3coNflb8x-xa9doxgNUXN1x7u-6eOdKWhtOieXg' },
+  { id: '4', name: 'Hannah Blair', imageUrl: 'https://i0.wp.com/kidsclinicspokane.com/wp-content/uploads/2020/07/RG2.webp?fit=418%2C418&ssl=1' },
+  { id: '5', name: 'Joseph Baker', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRszSP7eCJg4XJEvrbu9llu2nHeO40FlqSQuA&s' },
+  { id: '6', name: 'James Bennett', imageUrl: 'https://avatars.githubusercontent.com/u/77581509?v=4' },
+  { id: '7', name: 'Megan Berry', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwai8NZS94WIiPwM-oOzUfb0xgZHWhlcOfkA&s' },
 ]
 
 const ContactItem = ({ contact }: { contact: Contact }) => {

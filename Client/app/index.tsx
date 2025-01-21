@@ -13,7 +13,7 @@ export default function ContactsScreen() {
   const router = useRouter()
 
   const handleCreateContact = () => {
-    router.push('/incoming_call')
+    console.log("not implemented");
   }
 
   return (
