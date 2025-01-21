@@ -101,7 +101,7 @@ const SegmentedControl = ({ activeTab, onTabChange }: {
   </View>
 )
 
-const ContactCard = ({ contact }) => {
+const ContactCard = ({ contact }: { contact: RecentContact }) => {
   const router = useRouter()
   const startCall = useCallStore(state => state.startCall)
 
