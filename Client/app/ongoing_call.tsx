@@ -131,16 +131,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
+    position: 'relative', // Plus besoin de `absolute` ici
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
-    color:'black'
+    color: 'black',
   },
   infoIcon: {
     width: 40,
@@ -161,9 +157,8 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   videoFeedContainer: {
+    flex: 1, // Prend tout l'espace disponible entre les autres éléments
     width: '100%',
-    height: '74%',
-    marginTop: 80,
   },
   videoFeed: {
     flex: 1,
@@ -185,10 +180,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   controls: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 20,
