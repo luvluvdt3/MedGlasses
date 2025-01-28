@@ -14,7 +14,7 @@ namespace ClientC
 
         private static void RecognizeSpeech()
         {
-            SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("fr-FR"));
+            /*SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("fr-FR"));
             recognizer.SetInputToDefaultAudioDevice();
 
             // Ajouter des mots-clés à reconnaître
@@ -31,17 +31,17 @@ namespace ClientC
             recognizer.SpeechRecognized += (sender, e) =>
             {
                 foreach (var result in e.Result.Words)
-                {
-                    if (result.Text == "Appeler")
+                {*/
+                    /*if (result.Text == "Appeler")
                     {
-                        Console.WriteLine("Commande reconnue : Appeler");
+                        Console.WriteLine("Commande reconnue : Appeler");*/
                         Task.Run(StartClient); // Démarre le client dans un thread séparé
-                    }
+                    /*}
                 }
-            };
+            };/
 
             recognizer.RecognizeAsync(RecognizeMode.Multiple);
-            Console.WriteLine("Reconnaissance vocale en cours... Dites 'Appeler' pour démarrer le client.");
+            Console.WriteLine("Reconnaissance vocale en cours... Dites 'Appeler' pour démarrer le client.");*/
         }
 
         static async Task ReceiveDataAsync(WebSocket socket, int width, int height)
