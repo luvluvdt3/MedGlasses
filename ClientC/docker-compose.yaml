@@ -1,0 +1,6 @@
+﻿services:
+  clientc:
+    image: clientc
+    build:
+      context: .
+      dockerfile: ClientC/Dockerfile

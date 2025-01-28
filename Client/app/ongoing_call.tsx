@@ -1,33 +1,83 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect, useRef, MutableRefObject} from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity, Animated, PanResponder } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useCallStore } from '../store/callStore'
 import { useUserStore } from '../store/userStore'
 
+const SOCKET_SERVER_URL = "ws://192.168.46.32:5000/ws"
+
 export default function OngoingCall() {
   const router = useRouter()
   const [showInfo, setShowInfo] = useState(false)
   const [isPointing, setIsPointing] = useState(false)
   const [points, setPoints] = useState<{ x: number; y: number }[]>([])
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const { currentCallerId, patientInfo, callDuration, endCall, setCallDuration } = useCallStore()
   const { getUserById } = useUserStore()
+  const [imageUris, setImageUris] = useState<string[]>([]);
+  let socket = useRef<WebSocket | null>(null);
 
   const caller = getUserById('1')
 
   useEffect(() => {
+    socket.current = new WebSocket(SOCKET_SERVER_URL);
+
+    socket.current.onopen = () => {
+      socket.current?.send("Medecin");
+      console.log("WebSocket connected");
+    };
+
+    socket.current.onmessage = (event) => {
+      if (typeof event.data === "string") {
+        console.log("Text message received:", event.data);
+      } else {
+        const bytes = new Uint8Array(event.data);
+        let binary = '';
+        bytes.forEach((byte) => {
+          binary += String.fromCharCode(byte);
+        });
+        const base64Data = btoa(binary);
+        const base64Image = `data:image/jpeg;base64,${base64Data}`;
+
+        setImageUris((prevUris) => {
+          const newUris = [...prevUris, base64Image];
+          // Limiter le nombre d'images à 10
+          if (newUris.length > 10) {
+            newUris.shift();  // Supprime la première (la plus ancienne) image
+          }
+          return newUris;
+        });
+      }
+    };
+
+    socket.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    socket.current.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
     const timer = setInterval(() => {
       setCallDuration(callDuration + 1)
     }, 1000)
 
-    return () => clearInterval(timer)
-  }, [callDuration])
+    return () => clearInterval(timer);
+  }, [200000]);  // Only re-run when `callDuration` changes
 
+
+  const forceUpdate = React.useCallback(() => {}, []);
   const handleEndCall = () => {
     endCall()
     router.back()
     router.back()
   }
+
+  const handleLayout = (event: any) => {
+    const { width, height }= event.nativeEvent.layout;
+    setImageDimensions({width: Math.floor(width), height: Math.floor(height) });
+  };
 
   const toggleInfo = () => {
     setShowInfo(!showInfo)
@@ -41,11 +91,13 @@ export default function OngoingCall() {
   }
 
   const handleImagePress = (event: { nativeEvent: { locationX: number; locationY: number } }) => {
-    if (!isPointing) return
-  
-    const { locationX, locationY } = event.nativeEvent
-    setPoints([{ x: locationX, y: locationY }])
-    console.log("Locations :",locationX,locationY);
+    if (!isPointing) return;
+
+    const { locationX, locationY } = event.nativeEvent;
+    setPoints([{ x: locationX, y: locationY }]);
+    const { width, height } = imageDimensions;
+    if (socket.current && socket.current?.readyState === WebSocket.OPEN)
+        socket.current?.send(Math.floor(locationX / width * 100) + "," + Math.floor(locationY / height * 100));
   }
 
   if (!caller || !patientInfo) {
@@ -63,10 +115,14 @@ export default function OngoingCall() {
       </View>
 
       <TouchableOpacity activeOpacity={1} onPress={handleImagePress} style={styles.videoFeedContainer}>
-        <Image
-          source={{ uri: caller.imageUrl }}
-          style={styles.videoFeed}
-        />
+        {imageUris.map((uri, index) => (
+            <Image
+                key={index}  // La clé est unique pour chaque image
+                source={{ uri }}
+                style={[styles.videoFeed, { position: 'absolute', top: 0, left: 0 }]} // Positionner chaque image par-dessus l'autre
+                onLayout={handleLayout}
+            />
+        ))}
         {points.map((point, index) => (
           <MaterialIcons
             key={index}
@@ -98,13 +154,13 @@ export default function OngoingCall() {
           <MaterialIcons name="gps-fixed" size={24} color={isPointing ? "#fff" : "#000"} />
           <Text style={[styles.controlText, isPointing && styles.activeControlText]}>Point</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={[styles.controlButton, styles.activeControlMute]}>
           <MaterialIcons name="mic" size={24} color="#ffff" />
           <Text style={[styles.controlText, styles.activeControlText]}>Mute</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={[styles.controlButton, styles.endButton]}
           onPress={handleEndCall}
         >
@@ -114,8 +170,8 @@ export default function OngoingCall() {
       </View>
 
       {showInfo && (
-        <TouchableOpacity 
-          style={styles.expandButton} 
+        <TouchableOpacity
+          style={styles.expandButton}
           onPress={toggleInfo}
         >
           <MaterialIcons name="keyboard-arrow-down" size={24} color="#007AFF" />
