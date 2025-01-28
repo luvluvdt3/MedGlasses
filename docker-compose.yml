@@ -1,0 +1,15 @@
+services:
+  clientc:
+    build:
+      context: ./ClientC/ClientC
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./ClientC/ClientC/bin:/app/publish
+    command: ["dotnet", "publish", "ClientC.csproj", "--configuration", "Release", "--output", "/app/publish", "--runtime", "win-x64", "--self-contained"]
+  server:
+    image: server
+    build:
+      context: ./Server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
