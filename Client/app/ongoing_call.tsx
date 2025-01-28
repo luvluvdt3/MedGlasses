@@ -4,8 +4,9 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useCallStore } from '../store/callStore'
 import { useUserStore } from '../store/userStore'
+import { Audio } from 'expo-av';
 
-const SOCKET_SERVER_URL = "ws://192.168.46.32:5000/ws"
+const SOCKET_SERVER_URL = "ws://192.168.40.32:5000/ws"
 
 export default function OngoingCall() {
   const router = useRouter()
@@ -20,6 +21,42 @@ export default function OngoingCall() {
 
   const caller = getUserById('1')
 
+  function HandlerVideo(bytes: Uint8Array) {
+    let binary = '';
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    const base64Data = btoa(binary);
+    const base64Image = `data:image/jpeg;base64,${base64Data}`;
+
+    setImageUris((prevUris) => {
+      const newUris = [...prevUris, base64Image];
+      // Limiter le nombre d'images à 10
+      if (newUris.length > 10) {
+        newUris.shift();  // Supprime la première (la plus ancienne) image
+      }
+      return newUris;
+    });
+  }
+
+  async function HandlerAudio(bytes: Uint8Array) {
+    console.log("Hello");
+    try {
+      const array = bytes.buffer;
+      const blob = new Blob([bytes], { type: 'audio/wav' }); // Assurez-vous que le type correspond à vos données audio
+      const audioUrl = URL.createObjectURL(blob);
+
+      // Charger et jouer l'audio
+      const { sound } = await Audio.Sound.createAsync(
+          { uri: audioUrl }
+      );
+
+      await sound.playAsync();
+    } catch (error) {
+      console.error("Erreur lors du décodage ou de la lecture de l'audio :", error);
+    }
+  }
+
   useEffect(() => {
     socket.current = new WebSocket(SOCKET_SERVER_URL);
 
@@ -28,26 +65,18 @@ export default function OngoingCall() {
       console.log("WebSocket connected");
     };
 
-    socket.current.onmessage = (event) => {
+    socket.current.onmessage = async (event) => {
       if (typeof event.data === "string") {
         console.log("Text message received:", event.data);
       } else {
         const bytes = new Uint8Array(event.data);
-        let binary = '';
-        bytes.forEach((byte) => {
-          binary += String.fromCharCode(byte);
-        });
-        const base64Data = btoa(binary);
-        const base64Image = `data:image/jpeg;base64,${base64Data}`;
+        const header = bytes[0];
+        const payload = bytes.slice(1);
 
-        setImageUris((prevUris) => {
-          const newUris = [...prevUris, base64Image];
-          // Limiter le nombre d'images à 10
-          if (newUris.length > 10) {
-            newUris.shift();  // Supprime la première (la plus ancienne) image
-          }
-          return newUris;
-        });
+        if (header === 0x01)
+            HandlerVideo(payload);
+        else
+            await HandlerAudio(payload);
       }
     };
 
@@ -196,7 +225,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
-    color:'black'
+    color:'black',
+    height: 200,
   },
   infoIcon: {
     width: 40,
@@ -217,8 +247,10 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   videoFeedContainer: {
+    position: 'absolute',
+    top: 120,
     width: '100%',
-    height: '74%',
+    height: '35%',
     marginTop: 80,
   },
   videoFeed: {
@@ -250,6 +282,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 10,
     backgroundColor: 'rgba(255,255,255,0.9)',
+    height: 100,
   },
   controlButton: {
     alignItems: 'center',

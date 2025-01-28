@@ -89,7 +89,7 @@ async Task HandleInfirmierrsync(WebSocket socket)
     // Écouter et traiter les messages WebSocket
     while (socket.State == WebSocketState.Open)
     {
-        var buffer = new byte[1024 * 1024];
+        var buffer = new byte[1024 * 128];
         var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
         if (result.MessageType == WebSocketMessageType.Binary)
