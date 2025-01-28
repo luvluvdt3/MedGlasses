@@ -18,6 +18,8 @@ export default function OngoingCall() {
   const { getUserById } = useUserStore()
   const [imageUris, setImageUris] = useState<string[]>([]);
   let socket = useRef<WebSocket | null>(null);
+// State pour gérer le son
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const caller = getUserById('1')
 
@@ -39,23 +41,44 @@ export default function OngoingCall() {
     });
   }
 
-  async function HandlerAudio(bytes: Uint8Array) {
-    console.log("Hello");
+
+// Handler pour jouer l'audio MP3
+  async function HandlerAudio(bytes: Uint8Array<ArrayBuffer>) {
     try {
-      const array = bytes.buffer;
-      const blob = new Blob([bytes], { type: 'audio/wav' }); // Assurez-vous que le type correspond à vos données audio
-      const audioUrl = URL.createObjectURL(blob);
+      // Convertir les bytes en Base64
+      const base64Audio = btoa(String.fromCharCode(...bytes));
+      const audioUrl = `data:audio/mp3;base64,${base64Audio}`; // Utilisation du format MP3
 
-      // Charger et jouer l'audio
-      const { sound } = await Audio.Sound.createAsync(
-          { uri: audioUrl }
-      );
+      // Si un son est déjà en cours de lecture, libérer l'ancien avant de charger un nouveau
+      if (sound !== null) {
+        await sound.stopAsync();  // Arrêter l'audio en cours
+        await sound.unloadAsync();  // Libérer la mémoire
+      }
 
-      await sound.playAsync();
+      // Utiliser expo-av pour jouer l'audio
+      const { sound: newSound } = await Audio.Sound.createAsync({ uri: audioUrl });
+      setSound(newSound);  // Stocker la nouvelle référence du son dans l'état
+      await newSound.playAsync(); // Jouer le son
+
+      // Gérer l'arrêt et la libération du son après la lecture
+      newSound.setOnPlaybackStatusUpdate(async (status) => {
+        // Vérifier si le status est valide
+        if (status && status.isLoaded && status.durationMillis && status.positionMillis) {
+          // Vérifier si la position est égale à la durée (fin de lecture)
+          if (status.positionMillis >= status.durationMillis) {
+            await newSound.unloadAsync();  // Libérer après la fin
+            setSound(null);  // Réinitialiser le state
+          }
+        }
+      });
+
     } catch (error) {
-      console.error("Erreur lors du décodage ou de la lecture de l'audio :", error);
+      console.error("Erreur lors de la lecture de l'audio MP3:", error);
     }
   }
+
+
+
 
   useEffect(() => {
     socket.current = new WebSocket(SOCKET_SERVER_URL);
@@ -74,9 +97,9 @@ export default function OngoingCall() {
         const payload = bytes.slice(1);
 
         if (header === 0x01)
-            HandlerVideo(payload);
+          HandlerVideo(payload);
         else
-            await HandlerAudio(payload);
+          await HandlerAudio(payload);
       }
     };
 
@@ -126,7 +149,7 @@ export default function OngoingCall() {
     setPoints([{ x: locationX, y: locationY }]);
     const { width, height } = imageDimensions;
     if (socket.current && socket.current?.readyState === WebSocket.OPEN)
-        socket.current?.send(Math.floor(locationX / width * 100) + "," + Math.floor(locationY / height * 100));
+      socket.current?.send(Math.floor(locationX / width * 100) + "," + Math.floor(locationY / height * 100));
   }
 
   if (!caller || !patientInfo) {
@@ -134,79 +157,79 @@ export default function OngoingCall() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.infoIcon} onPress={toggleInfo}>
-          <MaterialIcons name="info" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.callerName}>{caller.name.toUpperCase()}</Text>
-        <Text style={styles.timer}>{new Date(callDuration * 1000).toISOString().substr(14, 5)}</Text>
-      </View>
-
-      <TouchableOpacity activeOpacity={1} onPress={handleImagePress} style={styles.videoFeedContainer}>
-        {imageUris.map((uri, index) => (
-            <Image
-                key={index}  // La clé est unique pour chaque image
-                source={{ uri }}
-                style={[styles.videoFeed, { position: 'absolute', top: 0, left: 0 }]} // Positionner chaque image par-dessus l'autre
-                onLayout={handleLayout}
-            />
-        ))}
-        {points.map((point, index) => (
-          <MaterialIcons
-            key={index}
-            name="gps-fixed"
-            size={24}
-            color="#0FF"
-            style={{
-              position: 'absolute',
-              left: point.x - 12, // Centrer l'icône
-              top: point.y - 12,  // Centrer l'icône
-            }}
-          />
-        ))}
-      </TouchableOpacity>
-
-      {showInfo && (
-        <View style={styles.infoPanel}>
-          {patientInfo.infos.map((info, index) => (
-            <Text key={index} style={styles.condition}>{info}</Text>
-          ))}
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.infoIcon} onPress={toggleInfo}>
+            <MaterialIcons name="info" size={24} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.callerName}>{caller.name.toUpperCase()}</Text>
+          <Text style={styles.timer}>{new Date(callDuration * 1000).toISOString().substr(14, 5)}</Text>
         </View>
-      )}
 
-      <View style={styles.controls}>
-        <TouchableOpacity
-          style={[styles.controlButton, isPointing && styles.activeControl]}
-          onPress={togglePointing}
-        >
-          <MaterialIcons name="gps-fixed" size={24} color={isPointing ? "#fff" : "#000"} />
-          <Text style={[styles.controlText, isPointing && styles.activeControlText]}>Point</Text>
+        <TouchableOpacity activeOpacity={1} onPress={handleImagePress} style={styles.videoFeedContainer}>
+          {imageUris.map((uri, index) => (
+              <Image
+                  key={index}  // La clé est unique pour chaque image
+                  source={{ uri }}
+                  style={[styles.videoFeed, { position: 'absolute', top: 0, left: 0 }]} // Positionner chaque image par-dessus l'autre
+                  onLayout={handleLayout}
+              />
+          ))}
+          {points.map((point, index) => (
+              <MaterialIcons
+                  key={index}
+                  name="gps-fixed"
+                  size={24}
+                  color="#0FF"
+                  style={{
+                    position: 'absolute',
+                    left: point.x - 12, // Centrer l'icône
+                    top: point.y - 12,  // Centrer l'icône
+                  }}
+              />
+          ))}
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.controlButton, styles.activeControlMute]}>
-          <MaterialIcons name="mic" size={24} color="#ffff" />
-          <Text style={[styles.controlText, styles.activeControlText]}>Mute</Text>
-        </TouchableOpacity>
+        {showInfo && (
+            <View style={styles.infoPanel}>
+              {patientInfo.infos.map((info, index) => (
+                  <Text key={index} style={styles.condition}>{info}</Text>
+              ))}
+            </View>
+        )}
 
-        <TouchableOpacity
-          style={[styles.controlButton, styles.endButton]}
-          onPress={handleEndCall}
-        >
-          <MaterialIcons name="call-end" size={24} color="#fff" />
-          <Text style={[styles.controlText, styles.endButtonText]}>End</Text>
-        </TouchableOpacity>
+        <View style={styles.controls}>
+          <TouchableOpacity
+              style={[styles.controlButton, isPointing && styles.activeControl]}
+              onPress={togglePointing}
+          >
+            <MaterialIcons name="gps-fixed" size={24} color={isPointing ? "#fff" : "#000"} />
+            <Text style={[styles.controlText, isPointing && styles.activeControlText]}>Point</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.controlButton, styles.activeControlMute]}>
+            <MaterialIcons name="mic" size={24} color="#ffff" />
+            <Text style={[styles.controlText, styles.activeControlText]}>Mute</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              style={[styles.controlButton, styles.endButton]}
+              onPress={handleEndCall}
+          >
+            <MaterialIcons name="call-end" size={24} color="#fff" />
+            <Text style={[styles.controlText, styles.endButtonText]}>End</Text>
+          </TouchableOpacity>
+        </View>
+
+        {showInfo && (
+            <TouchableOpacity
+                style={styles.expandButton}
+                onPress={toggleInfo}
+            >
+              <MaterialIcons name="keyboard-arrow-down" size={24} color="#007AFF" />
+            </TouchableOpacity>
+        )}
       </View>
-
-      {showInfo && (
-        <TouchableOpacity
-          style={styles.expandButton}
-          onPress={toggleInfo}
-        >
-          <MaterialIcons name="keyboard-arrow-down" size={24} color="#007AFF" />
-        </TouchableOpacity>
-      )}
-    </View>
   )
 }
 
@@ -332,4 +355,4 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-})
+});
