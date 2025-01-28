@@ -5,8 +5,7 @@ import { useRouter } from 'expo-router'
 import { useCallStore } from '../store/callStore'
 import { useUserStore } from '../store/userStore'
 import { Audio } from 'expo-av';
-
-const SOCKET_SERVER_URL = "ws://192.168.40.32:5000/ws"
+import SOCKET_SERVER_URL from "../env/env"
 
 export default function OngoingCall() {
   const router = useRouter()
@@ -81,7 +80,7 @@ export default function OngoingCall() {
 
 
   useEffect(() => {
-    socket.current = new WebSocket(SOCKET_SERVER_URL);
+    socket.current = new WebSocket(SOCKET_SERVER_URL.SOCKET_SERVER_URL);
 
     socket.current.onopen = () => {
       socket.current?.send("Medecin");
