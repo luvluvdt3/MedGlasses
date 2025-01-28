@@ -40,3 +40,21 @@ Pour tester cette fonctionnalité, rendez-vous sur la branche nommée `stream` d
 
 ---
 
+### **Reconnaissance de Commandes Vocales**
+
+Pour démontrer notre capacité à utiliser la reconnaissance de commandes vocales, nous avons implémenté un système simple. Voici les étapes pour le tester :
+
+1. **📂 Ouvrir le dossier `Hololens` dans Unity 6**  
+   - Assurez-vous que Unity 6 est correctement configuré sur votre machine.
+
+2. **🔨 Construire et déployer l'application sur vos Hololens**  
+   - Suivez ce tutoriel détaillé : [Construire et déployer une application Unity sur Hololens](https://learn.microsoft.com/fr-fr/windows/mixed-reality/develop/unity/build-and-deploy-to-hololens).
+
+3. **🚀 Tester l'application**  
+   - Une fois l'application lancée, vous verrez deux cubes flottants dans votre champ de vision.  
+   - Essayez de prononcer les commandes vocales suivantes :  
+     - **"Move up"** pour déplacer les cubes vers le haut.  
+     - **"Move down"** pour les déplacer vers le bas.
+
+---
+
