@@ -102,6 +102,4 @@ Pour démontrer notre capacité à utiliser la reconnaissance de commandes vocal
 
 ---
 
-L'application permet d'échanger comme sur WhatsApp, avec en plus la possibilité de positionner un point d'intérêt sur l'image afin de guider les actes médicaux.
-
 Bon test ! 🚑
