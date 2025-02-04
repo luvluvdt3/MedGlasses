@@ -10,7 +10,7 @@
 
 ### 🖥️ **Vue en temps réel des Hololens avec l'API Device Portal**
 
-Pour tester cette fonctionnalité, rendez-vous sur la branche nommée `stream` dans le dépôt de votre projet. Voici les étapes à suivre pour configurer et utiliser cette fonctionnalité.
+Pour tester cette fonctionnalité, rendez-vous sur la branche nommée `stream`. Voici les étapes à suivre pour configurer et utiliser cette fonctionnalité.
 
 #### 📋 **Étapes**
 
