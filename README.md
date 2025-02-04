@@ -62,7 +62,7 @@ Pour démontrer notre capacité à utiliser la reconnaissance de commandes vocal
 
 ## Prérequis
 
-- **Branche Git** : `21-zustand`
+- **Branche Git** : `poc-pc-mobile`
 - **Docker** : Le daemon Docker doit être en fonctionnement
 - **Réseau** : Ne pas être connecté au réseau de l'université
 
