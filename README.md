@@ -66,21 +66,6 @@ Pour démontrer notre capacité à utiliser la reconnaissance de commandes vocal
 - **Docker** : Le daemon Docker doit être en fonctionnement
 - **Réseau** : Ne pas être connecté au réseau de l'université
 
-## Démarrage de l'application (Version Desktop)
-
-1. Démarrer les conteneurs Docker :
-   ```sh
-   docker compose up -d
-   ```
-2. Se déplacer dans le répertoire du client :
-   ```sh
-   cd ClientC/ClientC/bin/
-   ```
-3. Lancer l'exécutable :
-   ```sh
-   ./ClientC.exe
-   ```
-
 ## Démarrage de l'application (Version Mobile)
 
 1. Modifier l'adresse du serveur dans `Client/env/env.ts` :
@@ -99,6 +84,23 @@ Pour démontrer notre capacité à utiliser la reconnaissance de commandes vocal
    npx expo start
    ```
 4. Scanner le QR Code avec l'application **Expo Go** sur votre smartphone.
+5. Appuyer sur le bouton rappeler de Gregory Robin
+6. Puis accepter
+
+## Démarrage de l'application (Version Desktop)
+
+1. Démarrer les conteneurs Docker :
+   ```sh
+   docker compose up -d
+   ```
+2. Se déplacer dans le répertoire du client :
+   ```sh
+   cd ClientC/ClientC/bin/
+   ```
+3. Lancer l'exécutable :
+   ```sh
+   ./ClientC.exe
+   ```
 
 ---
 
