@@ -58,3 +58,50 @@ Pour démontrer notre capacité à utiliser la reconnaissance de commandes vocal
 
 ---
 
+# Test du serveur/client mobile et ordinateur
+
+## Prérequis
+
+- **Branche Git** : `21-zustand`
+- **Docker** : Le daemon Docker doit être en fonctionnement
+- **Réseau** : Ne pas être connecté au réseau de l'université
+
+## Démarrage de l'application (Version Desktop)
+
+1. Démarrer les conteneurs Docker :
+   ```sh
+   docker compose up -d
+   ```
+2. Se déplacer dans le répertoire du client :
+   ```sh
+   cd ClientC/ClientC/bin/
+   ```
+3. Lancer l'exécutable :
+   ```sh
+   ./ClientC.exe
+   ```
+
+## Démarrage de l'application (Version Mobile)
+
+1. Modifier l'adresse du serveur dans `Client/env/env.ts` :
+   ```ts
+   SOCKET_SERVEUR_URL = "ws://<IP>:5000/ws";
+   ```
+   (Remplacez `<IP>` par l'adresse IP de votre serveur.)
+
+2. Installer les dépendances :
+   ```sh
+   cd Client
+   npm install
+   ```
+3. Démarrer l'application Expo :
+   ```sh
+   npx expo start
+   ```
+4. Scanner le QR Code avec l'application **Expo Go** sur votre smartphone.
+
+---
+
+L'application permet d'échanger comme sur WhatsApp, avec en plus la possibilité de positionner un point d'intérêt sur l'image afin de guider les actes médicaux.
+
+Bon test ! 🚑
