@@ -90,7 +90,7 @@ Pour tester cette fonctionnalité, rendez-vous sur la branche nommée `stream`. 
    - Pour accéder au flux vidéo et audio en temps réel des Hololens, mettez à jour l'adresse de l'API dans le fichier `ongoing_call.tsx`.
    - Utilisez le format suivant :  
      ```
-     https://{votre_nom_utilisateur_Hololens}:{votre_mot_de_passe_Hololens}@192.168.87.217//api/holographic/stream/live.mp4?holo=true&pv=true&mic=true&loopback=true&RenderFromCamera=true
+     https://{votre_nom_utilisateur_Hololens}:{votre_mot_de_passe_Hololens}@<hololens_ip>//api/holographic/stream/live.mp4?holo=true&pv=true&mic=true&loopback=true&RenderFromCamera=true
      ```
    - *Note : Cette méthode n'est pas optimale en termes de sécurité. La prochaine étape prévue est d'implémenter une solution sécurisée via un serveur C#.*
 
